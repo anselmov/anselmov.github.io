@@ -15,9 +15,9 @@
   </head>
   <body>
     <div class="reveal">
-      <div class="slides"><section ><section data-markdown><script type="text/template">## Java \<Generics\>
+      <div class="slides"><section ><section data-markdown><script type="text/template">## The Java \<Generics\>
 
-> Generics add stability to your code .
+> Generics add stability to your code.
 
 ------
 
@@ -27,26 +27,6 @@
 - elimination of casts
 - enabling to implement generic algorithms
 </script></section><section data-markdown><script type="text/template">
-Example, make that class generic :
-```java 
-public class Box {
-    private Object object;
-
-    public void set(Object object) { this.object = object; }
-    public Object get() { return object; }
-}
-```
-
-</script></section><section data-markdown><script type="text/template">
-
-```java 
-public class Box<T> { // T stands for "Type"
-    private T t;
-
-    public void set(T t) { this.t = t; }
-    public T get() { return t; }
-}
-```
 The most commonly used type parameter names are:
 
 -  E - Element
@@ -497,7 +477,7 @@ public class Box<T> { // T stands for "Type"
       // options from URL query string
       var queryOptions = Reveal().getQueryHash() || {};
 
-      var options = extend(defaultOptions, {}, queryOptions);
+      var options = extend(defaultOptions, {"navigationMode":"grid"}, queryOptions);
     </script>
 
 
