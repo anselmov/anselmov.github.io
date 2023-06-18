@@ -16,7 +16,6 @@
   <body>
     <div class="reveal">
       <div class="slides"><section ><section data-markdown><script type="text/template"><!-- .slide: data-background-color="orange" -->
-#### Wildcard subtypes & relationships
 ![Subtype relationships](java_assets/generics-subtypeRelationship.gif)
 ![Wildcard subtyping](java_assets/generics-wildcardSubtyping.gif)
 </script></section><section data-markdown><script type="text/template">
@@ -118,8 +117,22 @@ public static void process(List<? extends Foo> inputList) { /* ... */ }
 ```java
 for (Foo elem : inputList) { // access as type Foo
 ```
-</script></section></section><section  data-markdown><script type="text/template">
+</script></section></section><section ><section data-markdown><script type="text/template">
+<!-- .slide: data-background-color="springgreen" -->
+# <s>new T()</s>
+# <s>instanceof</s>
 
+```java
+public static <E> void rtti(List<E> list) {
+  if (list instanceof ArrayList<Integer>) {  // error
+                             
+  }
+}
+```</script></section><section data-markdown><script type="text/template">
+<!-- .slide: data-background-color="springgreen" -->
+# NO TYPE ARRAYS <s>T[]</s>
+# NO OVERLOADING in the same class
+</script></section><section data-markdown><script type="text/template">
 <!-- .slide: data-background-color="yellow" -->
 # ? = Unbounded
 
@@ -130,14 +143,15 @@ for (Foo elem : inputList) { // access as type Foo
 + List.clear
 + Class<?> 
 
+<!--
+Plan
 
-<!--        Plan
-        | 7 | 6 |   |
-        | 5 | 6 |   |
-        | 4 | C | 2 |
-        | 3 | 1 | P |
+    | 7 | 6 | 8 |
+    | 5 | 6 | 8 |
+    | 4 | C | 2 |
+    | 3 | 1 |   |
 -->
-</script></section></div>
+</script></section></section></div>
     </div>
 
     <script src="./dist/reveal.js"></script>
