@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>reveal-md</title>
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <link rel="stylesheet" href="./dist/reset.css" />
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/base16/zenburn.css" />
+
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section ><section data-markdown><script type="text/template">## The Java \<Generics\>
+
+> Generics add stability to your code.
+
+------
+
+### How ?
+
+- stronger type checks at compile time
+- elimination of casts
+- enabling to implement generic algorithms
+</script></section><section data-markdown><script type="text/template">
+The most commonly used type parameter names are:
+
+-  E - Element
+-  K - Key
+-  N - Number
+-  T - Type
+-  V - Value
+-  S,U,V etc. - 2nd, 3rd, 4th types
+
+<!-- .element: data-id="code-animation" -->
+</script></section></section><section ><section data-markdown><script type="text/template">
+## Method invocation
+
+```java
+public class Util {
+   public static <K, V> boolean compare(Pair<K, V> p1,
+                                        Pair<K, V> p2) {
+       return p1.getKey().equals(p2.getKey()) &&
+              p1.getValue().equals(p2.getValue());
+   }
+}
+// main
+Pair<Integer, String> p1 = new Pair<>(1, "apple");
+Pair<Integer, String> p2 = new Pair<>(2, "pear");
+boolean same = Util.<Integer, String>compare(p1, p2);
+
+```
+</script></section><section data-markdown><script type="text/template">
+extends (interface or class) = upperbound
+```java
+public static void process(List<? extends Foo> list) { /* ... */ }
+```
+
+\<? extends Foo\>  matches Foo and any subtype of Foo
+
+```java
+public static void process(List<? extends Foo> list) {
+    for (Foo elem : list) { // access as type Foo
+        // ...
+    }
+}
+```
+</script></section><section data-markdown><script type="text/template">
+? = Unbounded
+
+* for methods using functionality provided in the Object class
+* when the code is using methods in the generic class that don't depend on the type parameter.
+For example, List.size or List.clear. In fact, Class<?> is so often used because most of the methods in Class<T> do not depend on T.
+
+```java
+public static void printList(List<?> list) {
+    for (Object elem: list)
+        System.out.print(elem + " ");
+}
+```</script></section><section data-markdown><script type="text/template">
+super = lower bounded
+
+* for a method working on Integer and its super types : Number and Object
+
+```java
+public static void addNumbers(List<? super Integer> list) {
+    for (int i = 1; i <= 10; i++) {
+        list.add(i);
+    }
+}
+```</script></section></section><section ><section data-markdown><script type="text/template">
+# Wildcard Guidelines 
+
+- An "in" variable serves up data to the code. Imagine a copy method with two arguments: `copy(src, dest)`. The src argument provides the data to be copied, so it is the "in" parameter.
+- An "out" variable holds data for use elsewhere. In the copy example, copy(src, dest), the dest argument accepts data, so it is the "out" parameter. 
+</script></section><section data-markdown><script type="text/template">
+- An "in" variable is defined with an upper bounded wildcard, using the extends keyword.
+- An "out" variable is defined with a lower bounded wildcard, using the super keyword.
+- In the case where the "in" variable can be accessed using methods defined in the Object class, use an unbounded wildcard.
+- In the case where the code needs to access the variable as both an "in" and an "out" variable, do not use a wildcard.
+
+</script></section></section><section ><section data-markdown><script type="text/template">
+# Quizz
+
+1. Write a generic method to count the number of elements in a collection that have a specific property (for example, odd integers, prime numbers, palindromes).
+</script></section><section data-markdown><script type="text/template">1. Answer
+
+```java
+public final class Algorithm {
+    public static <T> int countIf(Collection<T> c,
+                                  UnaryPredicate<T> p) {
+        int count = 0;
+        for (T elem : c)
+            if (p.test(elem))
+                ++count;
+        return count;
+    }
+}
+
+public interface UnaryPredicate<T> {
+    public boolean test(T obj);
+}
+
+```
+</script></section><section data-markdown><script type="text/template">
+For example, the following program counts the number of odd integers in an integer list:
+
+```java
+import java.util.*;
+
+class OddPredicate implements UnaryPredicate<Integer> {
+  public boolean test(Integer i) { return i % 2 != 0; }
+}
+
+public class Test {
+  public static void main(String[] args) {
+    Collection<Integer> ci = Arrays.asList(1, 2, 3, 4);
+    int count = Algorithm.countIf(ci, new OddPredicate());
+    System.out.println("Number of odd integers = " + count);
+  }
+}
+```
+The program prints:
+
+Number of odd integers = 2
+</script></section><section data-markdown><script type="text/template">
+2. Will the following class compile? If not, why?
+
+```java
+public final class Algorithm {
+    public static <T> T max(T x, T y) {
+        return x > y ? x : y;
+    }
+}
+```
+</script></section><section data-markdown><script type="text/template">Answer: No. The greater than (>) operator applies only to primitive numeric types.
+
+3. Write a generic method to exchange the positions of two different elements in an array.
+</script></section><section data-markdown><script type="text/template">
+3. Answer:
+
+```java
+public static <T> void swap(T[] a, int x, int y) {
+    T temp = a[x];
+    a[x] = a[y];
+    a[y] = temp;
+
+}
+```
+
+4. If the compiler erases all type parameters at compile time, why should you use generics?
+</script></section><section data-markdown><script type="text/template">
+4. Answer: You should use generics because:
+
+* The Java compiler enforces tighter type checks on generic code at compile time.
+* Generics support programming types as parameters.
+* Generics enable you to implement generic algorithms.
+
+<!-- .slide: data-auto-animate -->
+</script></section><section data-markdown><script type="text/template">
+5. What is the following class converted to after type erasure?
+
+```java
+public class Pair<K, V> {
+
+    public Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public K getKey() { return key; }
+    public V getValue() { return value; }
+
+    public void setKey(K key)     { this.key = key; }
+    public void setValue(V value) { this.value = value; }
+
+    private K key;
+    private V value;
+}
+```
+</script></section><section data-markdown><script type="text/template">
+5. Answer:
+
+```java
+public class Pair {
+
+    public Pair(Object key, Object value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public Object getKey() { return key; }
+    public Object getValue() { return value; }
+
+    public void setKey(Object key)     { this.key = key; }
+    public void setValue(Object value) { this.value = value; }
+
+    private Object key;
+    private Object value;
+}
+```</script></section><section data-markdown><script type="text/template">
+6. What is the following method converted to after type erasure?
+
+```java
+public static <T extends Comparable<T>>
+int findFirstGreaterThan(T[] at, T elem) {
+    // ...
+}
+```
+
+6. Answer:
+
+```java
+public static int findFirstGreaterThan (Comparable[] at,
+                                        Comparable elem) {
+    // ...
+}
+```
+</script></section><section data-markdown><script type="text/template">
+7) Will the following method compile? If not, why?
+
+```java
+public static void print(List<? extends Number> list) {
+    for (Number n : list)
+        System.out.print(n + " ");
+    System.out.println();
+}
+```
+
+7) Yes.
+</script></section><section data-markdown><script type="text/template">
+8) Write a generic method to find the maximal element in the range [begin, end) of a list.
+8. Answer :
+
+```java
+public static <T extends Object & Comparable<? super T>>
+T max(List<? extends T> list, int begin, int end) {
+
+    T maxElem = list.get(begin);
+
+    for (++begin; begin < end; ++begin)
+        if (maxElem.compareTo(list.get(begin)) < 0)
+            maxElem = list.get(begin);
+    return maxElem;
+}
+```</script></section><section data-markdown><script type="text/template">
+9) Will the following class compile? If not, why?  
+
+```java
+public class Singleton<T> {
+
+    public static T getInstance() {
+        if (instance == null)
+            instance = new Singleton<T>();
+
+        return instance;
+    }
+
+    private static T instance = null;
+}
+```
+
+9) Answer: generic types can't be static
+</script></section><section data-markdown><script type="text/template">
+10) 
+Given the following classes:
+
+```java
+class Shape { /* ... */ }
+class Circle extends Shape { /* ... */ }
+class Rectangle extends Shape { /* ... */ }
+
+class Node<T> { /* ... */ }
+
+```
+Will the following code compile? If not, why?
+
+```java
+Node<Circle> nc = new Node<>();
+Node<Shape>  ns = nc;
+```
+
+10) Answer: No. Because Node<Circle> is not a subtype of Node<Shape>. 
+</script></section><section data-markdown><script type="text/template">
+11) Consider this class:
+
+```java
+    class Node<T> implements Comparable<T> {
+        public int compareTo(T obj) { /* ... */ }
+        // ...
+    }
+```
+
+Will the following code compile? If not, why?
+
+```java
+Node<String> node = new Node<>();
+Comparable<String> comp = node;
+
+```
+
+11) Answer: yes
+</script></section><section data-markdown><script type="text/template">
+12) How do you invoke the following method to find the first integer in a list that is relatively prime to a list of specified integers?
+
+```java
+    public static <T> int findFirst(
+    List<T> list, int begin, int end, UnaryPredicate<T> p)
+```
+
+Note that two integers a and b are relatively prime if gcd(a, b) = 1, where gcd is short for greatest common divisor.
+</script></section><section data-markdown><script type="text/template">
+12) Answer:
+
+```java
+import java.util.*;
+
+public final class Algorithm {
+
+    public static <T>
+        int findFirst(
+        List<T> list, int begin, int end,
+        UnaryPredicate<T> p) {
+
+            for (; begin < end; ++begin)
+                if (p.test(list.get(begin)))
+                    return begin;
+            return -1;
+        }
+
+    // x > 0 and y > 0
+    public static int gcd(int x, int y) {
+        for (int r; (r = x % y) != 0; x = y, y = r) { }
+        return y;
+    }
+}
+```
+</script></section><section data-markdown><script type="text/template">
+The generic UnaryPredicate interface is defined as follows:
+
+```java
+public interface UnaryPredicate<T> {
+    public boolean test(T obj);
+}
+```
+
+The following program tests the findFirst method:
+
+```java
+import java.util.*;
+
+class RelativelyPrimePredicate implements UnaryPredicate<Integer> {
+    public RelativelyPrimePredicate(Collection<Integer> c) {
+        this.c = c;
+    }
+
+    public boolean test(Integer x) {
+        for (Integer i : c)
+            if (Algorithm.gcd(x, i) != 1)
+                return false;
+
+        return c.size() > 0;
+    }
+
+    private Collection<Integer> c;
+}
+```
+</script></section><section data-markdown><script type="text/template">
+```java
+public class Test {
+    public static void main(String[] args) throws Exception {
+
+        List<Integer> li = Arrays.asList(3, 4, 6, 8, 11, 15, 28, 32);
+        Collection<Integer> c = Arrays.asList(7, 18, 19, 25);
+        UnaryPredicate<Integer> p = new RelativelyPrimePredicate(c);
+
+        int i = ALgorithm.findFirst(li, 0, li.size(), p);
+
+        if (i != -1) {
+            System.out.print(li.get(i) + " is relatively prime to ");
+            for (Integer k : c)
+                System.out.print(k + " ");
+            System.out.println();
+        }
+    }
+}// The program prints: 11 is relatively prime to 7 18 19 25
+```
+</script></section></section><section  data-markdown><script type="text/template">
+```java 
+public class Box {
+    private Object object;
+
+    public void set(Object object) { this.object = object; }
+    public Object get() { return object; }
+}
+```
+
+<!-- .element: data-id="code-animation" -->
+</script></section><section  data-markdown><script type="text/template">
+<!-- .slide: data-auto-animate -->
+
+```java 
+public class Box<T> { // T stands for "Type"
+    private T t;
+
+    public void set(T t) { this.t = t; }
+    public T get() { return t; }
+}
+```
+
+<!-- .element: data-id="code-animation" -->
+</script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        slideNumber: true,
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {"navigationMode":"grid"}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
